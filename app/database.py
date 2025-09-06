@@ -1,11 +1,17 @@
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, declarative_base,Session
+import os
 
 # 1. The Engine (Power Plant) 
 # This URL tells your app how to find and connect to the database.
-SQLALCHEMY_DATABASE_URL = "postgresql://postgres:123456789@localhost/fastapi"
+# Use Heroku's DATABASE_URL if available, otherwise use local database
+DATABASE_URL = os.getenv("DATABASE_URL", "postgresql://postgres:123456789@localhost/fastapi")
 
-engine = create_engine(SQLALCHEMY_DATABASE_URL)
+# Handle Heroku's postgres:// URL format
+if DATABASE_URL.startswith("postgres://"):
+    DATABASE_URL = DATABASE_URL.replace("postgres://", "postgresql://", 1)
+
+engine = create_engine(DATABASE_URL)
 
 
 # 2. The Session (Workshop) 

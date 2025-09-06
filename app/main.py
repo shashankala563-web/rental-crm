@@ -4,13 +4,12 @@ from fastapi.staticfiles import StaticFiles
 from fastapi.responses import FileResponse
 from pydantic import BaseModel
 from typing import Optional, List
-import psycopg
-from psycopg.rows import dict_row
-import time
+import os
 from . import models, schemas
 from .routers import clients, users
 from .database import engine, get_db, Session
 
+# Create database tables
 models.Base.metadata.create_all(bind=engine)
 
 app = FastAPI(title="Rental CRM API", version="1.0.0")
@@ -27,18 +26,6 @@ app.add_middleware(
 # Include routers
 app.include_router(users.router)
 app.include_router(clients.router)
-
-# Database connection
-while True:
-    try:
-    # Connect using connection string
-        conn = psycopg.connect(host = 'localhost',dbname = 'fastapi',user = 'postgres',password = '123456789')
-        cursor = conn.cursor(row_factory=dict_row)
-        print("Database Connection Successful") 
-        break
-    except Exception as error:
-        print(" Database Connection Failed\nError:", error)
-        time.sleep(3)
 
 # Serve HTML pages
 @app.get("/")
